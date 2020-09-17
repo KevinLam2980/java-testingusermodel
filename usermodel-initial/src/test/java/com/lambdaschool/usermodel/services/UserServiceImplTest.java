@@ -159,4 +159,7 @@ public class UserServiceImplTest {
         userService.deleteAll();
         assertEquals(0, userService.findAll().size());
     }
+
+
+
 }

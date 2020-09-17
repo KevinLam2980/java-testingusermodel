@@ -25,6 +25,9 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.ArrayList;
@@ -155,7 +158,7 @@ public class UserControllerTest {
         var apiUrl = "/users/users";
         Mockito.when(userService.findAll()).thenReturn(userList);
 
-        var builder = MockMvcRequestBuilders.get(apiUrl).accept(MediaType.APPLICATION_JSON);
+        var builder = get(apiUrl).accept(MediaType.APPLICATION_JSON);
         var result = mockMvc.perform(builder).andReturn();
         var jsonResult = result.getResponse().getContentAsString();
 
@@ -171,7 +174,7 @@ public class UserControllerTest {
         var apiUrl = "/users/user/10";
         Mockito.when(userService.findUserById(10)).thenReturn(userList.get(0));
 
-        var builder = MockMvcRequestBuilders.get(apiUrl).accept(MediaType.APPLICATION_JSON);
+        var builder = get(apiUrl).accept(MediaType.APPLICATION_JSON);
         var result = mockMvc.perform(builder).andReturn();
         var jsonResult = result.getResponse().getContentAsString();
 
@@ -184,7 +187,7 @@ public class UserControllerTest {
         var apiUrl = "/users/user/name/namedperson";
         Mockito.when(userService.findByName("namedperson")).thenReturn(userList.get(0));
 
-        var builder = MockMvcRequestBuilders.get(apiUrl).accept(MediaType.APPLICATION_JSON);
+        var builder = get(apiUrl).accept(MediaType.APPLICATION_JSON);
         var result = mockMvc.perform(builder).andReturn();
         var jsonResult = result.getResponse().getContentAsString();
 
@@ -196,7 +199,7 @@ public class UserControllerTest {
     public void d_getUserLikeName() throws Exception{
         var apiUrl = "/users/user/name/like/name";
         Mockito.when(userService.findByNameContaining("name")).thenReturn(userList);
-        var builder = MockMvcRequestBuilders.get(apiUrl).accept(MediaType.APPLICATION_JSON);
+        var builder = get(apiUrl).accept(MediaType.APPLICATION_JSON);
         var result = mockMvc.perform(builder).andReturn();
         var jsonResult = result.getResponse().getContentAsString();
 
@@ -242,7 +245,7 @@ public class UserControllerTest {
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(userString);
-        mockMvc.perform(rb).andExpect(status().isOk()).andDo(MockMvcResultHandlers.print());
+        mockMvc.perform(rb).andExpect(status().isOk()).andDo(print());
     }
 
     @Test
@@ -263,7 +266,7 @@ public class UserControllerTest {
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(userString);
-        mockMvc.perform(rb).andExpect(status().isOk()).andDo(MockMvcResultHandlers.print());
+        mockMvc.perform(rb).andExpect(status().isOk()).andDo(print());
     }
 
     @Test
@@ -272,4 +275,13 @@ public class UserControllerTest {
         var builder = MockMvcRequestBuilders.delete(apiUrl).accept(MediaType.APPLICATION_JSON);
         mockMvc.perform(builder).andExpect(status().isOk());
     }
+
+    // Integration Test
+    // http://localhost:2019/users/users
+    @Test
+    public void z_listAllUsersIntTest() throws Exception {
+        mockMvc.perform((RequestBuilder) get("/users/users"))
+                .andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON));
+    }
+
 }
